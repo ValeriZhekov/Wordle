@@ -24,4 +24,20 @@
       (word (cdr words) (- pos 1))))
        
 (define (randWord) (word words (rand numWords)))
+
+
+(define (rateWord word input )
+  
+  (define (contains? letter str)
+        (cond ((= 0 (string-length str)) #f)
+          ((equal? letter (substring str 0 1)) #t)
+          (else (contains? letter (substring str 1)))))
+  
+  (define (help w in) 
+  (cond ((= 0 (string-length in)) '())
+        ((equal? (substring w 0 1) (substring in 0 1)) (cons "green" (help (substring w 1) (substring in 1))))
+        ((contains? (substring in 0 1) word) (cons "yellow" (help (substring w 1) (substring in 1))))
+        (else (cons "grey" (help (substring w 1) (substring in 1))))))
+             
+  (help word input))
   
