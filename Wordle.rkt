@@ -40,4 +40,22 @@
         (else (cons "grey" (help (substring w 1) (substring in 1))))))
              
   (help word input))
+
+
+
+(define (game word len)
+
+  (let ((input (read)))
+    (if (not (= (string-length input) len))
+        (begin (display "Wrong length") (newline) (game word len))
+        
+  (let ((result (rateWord word input))) 
+    (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
+    (else (begin (display result) (newline) (game word len))))))))
+       
+;;Задава начало
+  (let* ((word (randWord))(len (string-length word)))
+               (begin (display word) (newline) (display "Lenght:") (display len) (newline) (game word len)))
+
+
   
