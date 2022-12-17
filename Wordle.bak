@@ -1,0 +1,27 @@
+#lang scheme
+(define (rand n) (floor (* n (random))))
+
+(define (testRand f n t a b c d e)
+  (let ((res (f n)))
+    (cond ((= t 0) (list a b c d e))
+      ((= res 0) (testRand f n (- t 1) (+ a 1) b c d e))
+          ((= res 4) (testRand f n (- t 1) a (+ b 1) c d e))
+          ((= res 11) (testRand f n (- t 1) a b (+ c 1) d e))
+          ((= res 15) (testRand f n (- t 1) a b c (+ d 1) e))
+          ((= res 24) (testRand f n (- t 1) a b c d (+ e 1)))
+          (else (testRand f n (- t 1) a b c d e)))))
+
+(define words
+    (list "rabbit" "wolf" "bear" "dog" "bird" "inform" "police" "vegetable" "meat" "grass" "metal"
+        "hungry" "keyboard" "mouse" "backpack" "helicopter" "detective" "song" "person" "laugh" "water"
+        "olive" "potato" "carrot" "apple" "pork"))
+
+(define numWords (length words))
+
+(define (word words pos)
+  (if (= pos 0)
+      (car words)
+      (word (cdr words) (- pos 1))))
+       
+(define (randWord) (word words (rand numWords)))
+  
