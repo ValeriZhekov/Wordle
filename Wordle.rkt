@@ -129,10 +129,11 @@
            ((not (equal? (substring w (cdr (car lst)) (+ 1 (cdr (car lst)))) (car (car lst)))) #f)
            (else (grn? w (cdr lst)))))
   
-  (define (cheat w res)
-    (cond ((= (string-length w) 0) '())
-          ((and (not (member (substring w 0 1) yellow)) (not (member (substring w 0 1) (map car green)))) (cons "grey" (cheat (substring w 1) (cdr res))))
-          (else (cons (car res) (cheat (substring w 1) (cdr res))))
+  (define (cheat w res pos)
+    (cond ((null? res) '())
+          ((and (not (member (substring w pos (+ pos 1)) yellow)) (not (member (substring w pos (+ pos 1)) (map car green))) (not (member pos (map cdr green))))
+           (cons "grey" (cheat w (cdr res) (+ pos 1))))
+          (else (cons (car res) (cheat w (cdr res) (+ pos 1))))
         ))
       
   (let ((input (read)))
@@ -143,7 +144,7 @@
      (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey)))
     
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
-    ((and (equal? cheated? #f) (= (rand 3) 0))  (begin (display (cheat input result)) (newline) (expert word len newgrn newyel newgry #t)))
+    ((and (equal? cheated? #f) (= (rand 3) 1))  (begin (display (cheat input result 0)) (newline) (expert word len newgrn newyel newgry #t)))
     (else (begin (display result) (newline) (expert word len newgrn newyel newgry cheated?))))))))
 
 (define modes '("normal" "easy" "helper" "expert"))
