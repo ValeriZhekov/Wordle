@@ -56,12 +56,12 @@
 (define (easy word len)
   (let ((input (read)))
     (if (not (= (string-length input) len))
-        (begin (display "Wrong length") (newline) (normal word len))
+        (begin (display "Wrong length") (newline) (easy word len))
         
   (let ((result (rateWord word input))) 
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
-          ((not (member input words)) (begin (display "Not in wordlist") (newline) (display result) (newline)  (normal word len)))
-    (else (begin (display result) (newline) (normal word len))))))))
+          ((not (member input words)) (begin (display "Not in wordlist") (newline) (display result) (newline)  (easy word len)))
+    (else (begin (display result) (newline) (easy word len))))))))
 
 (define modes '("normal" "easy" "helper" "expert"))
 ;;Задава начало
@@ -76,4 +76,3 @@
                             (else (begin (display "No such game mode") (newline)))))))))
 
 (begin (display "GAME MODE:") (newline) (RUN))
-  
