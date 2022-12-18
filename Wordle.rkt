@@ -104,6 +104,44 @@
           
     (else (begin (display result) (newline) (easy word len newgrn newyel newgry))))))))
 
+(define (expert word len green yellow grey cheated?)
+  (define (help w res pos grn yel gry)
+    (cond ((= 0 (string-length w)) (list grn yel gry))
+          ((equal? (car res) "green") (help (substring w 1) (cdr res) (+ pos 1) (add (cons (substring w 0 1) pos) grn) yel gry))
+          ((equal? (car res) "yellow") (help (substring w 1) (cdr res) (+ pos 1) grn (add (substring w 0 1) yel) gry))
+          (else (help (substring w 1) (cdr res) (+ pos 1) grn yel (add (substring w 0 1) gry)))
+      ))
+  (define (remove x lst)
+    (if (equal? x (car lst))
+        (cdr lst)
+        (cons (car lst) (remove x (cdr lst)))))
+  
+    (define (yel? w lst)
+      (cond ((null? lst) #t)
+            ((= (string-length w) 0) #f)
+            ((member (substring w 0 1) lst) (yel? (substring w 1) (remove (substring w 0 1) lst)))
+            (else (yel? (substring w 1) lst)))
+          )
+  (define (gry? w lst)
+       (cond ((= (string-length w) 0) #t)
+              ((member (substring w 0 1) lst) #f)
+              (else (gry? (substring w 1) lst))))
+  (define (grn? w lst)
+     (cond ((null? lst) #t)
+           ((not (equal? (substring w (cdr (car lst)) (+ 1 (cdr (car lst)))) (car (car lst)))) #f)
+           (else (grn? w (cdr lst)))))
+  
+  (let ((input (read)))
+    (if (not (= (string-length input) len))
+        (begin (display "Wrong length") (newline) (expert word len green yellow grey cheated?))
+        
+  (let* ((result (rateWord word input))(colors (help input result 0 '() '() '()))
+     (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey)))
+    
+    (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
+    ((and (equal? cheated? #f) (= (rand 3) 0))  (begin (display "cheat") (newline) (expert word len newgrn newyel newgry #t)))
+    (else (begin (display result) (newline) (expert word len newgrn newyel newgry cheated?))))))))
+
 (define modes '("normal" "easy" "helper" "expert"))
 ;;Задава начало
 (define (RUN)
@@ -114,6 +152,7 @@
                (begin (display word) (newline) (display "Lenght:") (display len) (newline)
                       (cond ((equal? mode "normal") (normal word len))
                             ((equal? mode "easy") (easy word len '() '() '()))
+                            ((equal? mode "expert") (expert word len '() '() '() #f))
                             (else (begin (display "No such game mode") (newline)))))))))
 
 (begin (display "GAME MODE:") (newline) (RUN)) 
