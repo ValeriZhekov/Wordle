@@ -43,19 +43,37 @@
 
 
 
-(define (game word len)
+(define (normal word len)
 
   (let ((input (read)))
     (if (not (= (string-length input) len))
-        (begin (display "Wrong length") (newline) (game word len))
+        (begin (display "Wrong length") (newline) (normal word len))
         
   (let ((result (rateWord word input))) 
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
-    (else (begin (display result) (newline) (game word len))))))))
-       
+    (else (begin (display result) (newline) (normal word len))))))))
+
+(define (easy word len)
+  (let ((input (read)))
+    (if (not (= (string-length input) len))
+        (begin (display "Wrong length") (newline) (normal word len))
+        
+  (let ((result (rateWord word input))) 
+    (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
+          ((not (member input words)) (begin (display "Not in wordlist") (newline) (display result) (newline)  (normal word len)))
+    (else (begin (display result) (newline) (normal word len))))))))
+
+(define modes '("normal" "easy" "helper" "expert"))
 ;;Задава начало
-  (let* ((word (randWord))(len (string-length word)))
-               (begin (display word) (newline) (display "Lenght:") (display len) (newline) (game word len)))
+(define (RUN)
+ (let ((mode (read)))
+  (if (not (member mode modes))
+      (begin (display "No such game mode") (newline) (RUN))
+(let* ((word (randWord))(len (string-length word)))
+               (begin (display word) (newline) (display "Lenght:") (display len) (newline)
+                      (cond ((equal? mode "normal") (normal word len))
+                            ((equal? mode "easy") (easy word len))
+                            (else (begin (display "No such game mode") (newline)))))))))
 
-
+(begin (display "GAME MODE:") (newline) (RUN))
   
