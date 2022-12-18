@@ -68,15 +68,28 @@
           ((equal? (car res) "yellow") (help (substring w 1) (cdr res) (+ pos 1) grn (add (substring w 0 1) yel) gry))
           (else (help (substring w 1) (cdr res) (+ pos 1) grn yel (add (substring w 0 1) gry)))
       ))
-    
+  (define (remove x lst)
+    (if (equal? x (car lst))
+        (cdr lst)
+        (cons (car lst) (remove x (cdr lst)))))
+  
+    (define (yel? w lst)
+      (cond ((null? lst) #t)
+            ((= (string-length w) 0) #f)
+            ((member (substring w 0 1) lst) (yel? (substring w 1) (remove (substring w 0 1) lst)))
+            (else (yel? (substring w 1) lst)))
+          )
   (let ((input (read)))
     (if (not (= (string-length input) len))
         (begin (display "Wrong length") (newline) (easy word len green yellow grey))
         
   (let* ((result (rateWord word input))(colors (help input result 0 '() '() '()))
-     (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey))      ) 
+     (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey)))
+    
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
+          ((not (yel? input yellow)) (begin (display "Missing yellows") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
           ((not (member input words)) (begin (display "Not in wordlist") (newline) (display (list newgrn newyel newgry)) (newline)  (easy word len newgrn newyel newgry)))
+          
     (else (begin (display result) (newline) (easy word len newgrn newyel newgry))))))))
 
 (define modes '("normal" "easy" "helper" "expert"))
