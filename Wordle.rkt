@@ -53,15 +53,31 @@
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
     (else (begin (display result) (newline) (normal word len))))))))
 
-(define (easy word len)
+(define (easy word len green yellow grey)
+  (define (add str lst)
+    (if (not (member str lst))
+        (cons str lst)
+        lst))
+  (define (add* lst1 lst2)
+    (if (null? lst1)
+        lst2
+        (add* (cdr lst1) (add (car lst1) lst2))))
+  (define (help w res pos grn yel gry)
+    (cond ((= 0 (string-length w)) (list grn yel gry))
+          ((equal? (car res) "green") (help (substring w 1) (cdr res) (+ pos 1) (add (cons (substring w 0 1) pos) grn) yel gry))
+          ((equal? (car res) "yellow") (help (substring w 1) (cdr res) (+ pos 1) grn (add (substring w 0 1) yel) gry))
+          (else (help (substring w 1) (cdr res) (+ pos 1) grn yel (add (substring w 0 1) gry)))
+      ))
+    
   (let ((input (read)))
     (if (not (= (string-length input) len))
-        (begin (display "Wrong length") (newline) (easy word len))
+        (begin (display "Wrong length") (newline) (easy word len green yellow grey))
         
-  (let ((result (rateWord word input))) 
+  (let* ((result (rateWord word input))(colors (help input result 0 '() '() '()))
+     (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey))      ) 
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
-          ((not (member input words)) (begin (display "Not in wordlist") (newline) (display result) (newline)  (easy word len)))
-    (else (begin (display result) (newline) (easy word len))))))))
+          ((not (member input words)) (begin (display "Not in wordlist") (newline) (display (list newgrn newyel newgry)) (newline)  (easy word len newgrn newyel newgry)))
+    (else (begin (display result) (newline) (easy word len newgrn newyel newgry))))))))
 
 (define modes '("normal" "easy" "helper" "expert"))
 ;;Задава начало
@@ -72,7 +88,7 @@
 (let* ((word (randWord))(len (string-length word)))
                (begin (display word) (newline) (display "Lenght:") (display len) (newline)
                       (cond ((equal? mode "normal") (normal word len))
-                            ((equal? mode "easy") (easy word len))
+                            ((equal? mode "easy") (easy word len '() '() '()))
                             (else (begin (display "No such game mode") (newline)))))))))
 
 (begin (display "GAME MODE:") (newline) (RUN))
