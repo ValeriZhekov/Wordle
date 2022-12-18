@@ -52,9 +52,8 @@
   (let ((result (rateWord word input))) 
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
     (else (begin (display result) (newline) (normal word len))))))))
-
-(define (easy word len green yellow grey)
-  (define (add str lst)
+;;cons if lst doesn't contain the value
+(define (add str lst)
     (if (not (member str lst))
         (cons str lst)
         lst))
@@ -62,6 +61,8 @@
     (if (null? lst1)
         lst2
         (add* (cdr lst1) (add (car lst1) lst2))))
+
+(define (easy word len green yellow grey)
   (define (help w res pos grn yel gry)
     (cond ((= 0 (string-length w)) (list grn yel gry))
           ((equal? (car res) "green") (help (substring w 1) (cdr res) (+ pos 1) (add (cons (substring w 0 1) pos) grn) yel gry))
