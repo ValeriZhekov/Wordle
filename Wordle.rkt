@@ -79,6 +79,10 @@
             ((member (substring w 0 1) lst) (yel? (substring w 1) (remove (substring w 0 1) lst)))
             (else (yel? (substring w 1) lst)))
           )
+  (define (gry? w lst)
+       (cond ((= (string-length w) 0) #t)
+              ((member (substring w 0 1) lst) #f)
+              (else (gry? (substring w 1) lst))))
   (let ((input (read)))
     (if (not (= (string-length input) len))
         (begin (display "Wrong length") (newline) (easy word len green yellow grey))
@@ -87,7 +91,9 @@
      (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey)))
     
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
+          ((not (gry? input grey)) (begin (display "Using greys") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
           ((not (yel? input yellow)) (begin (display "Missing yellows") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
+          
           ((not (member input words)) (begin (display "Not in wordlist") (newline) (display (list newgrn newyel newgry)) (newline)  (easy word len newgrn newyel newgry)))
           
     (else (begin (display result) (newline) (easy word len newgrn newyel newgry))))))))
@@ -104,4 +110,4 @@
                             ((equal? mode "easy") (easy word len '() '() '()))
                             (else (begin (display "No such game mode") (newline)))))))))
 
-(begin (display "GAME MODE:") (newline) (RUN))
+(begin (display "GAME MODE:") (newline) (RUN)) 
