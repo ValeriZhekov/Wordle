@@ -83,6 +83,11 @@
        (cond ((= (string-length w) 0) #t)
               ((member (substring w 0 1) lst) #f)
               (else (gry? (substring w 1) lst))))
+  (define (grn? w lst)
+     (cond ((null? lst) #t)
+           ((not (equal? (substring w (cdr (car lst)) (+ 1 (cdr (car lst)))) (car (car lst)))) #f)
+           (else (grn? w (cdr lst)))))
+  
   (let ((input (read)))
     (if (not (= (string-length input) len))
         (begin (display "Wrong length") (newline) (easy word len green yellow grey))
@@ -92,6 +97,7 @@
     
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
           ((not (gry? input grey)) (begin (display "Using greys") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
+          ((not (grn? input green)) (begin (display "Missing greens") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
           ((not (yel? input yellow)) (begin (display "Missing yellows") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
           
           ((not (member input words)) (begin (display "Not in wordlist") (newline) (display (list newgrn newyel newgry)) (newline)  (easy word len newgrn newyel newgry)))
