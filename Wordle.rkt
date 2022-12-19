@@ -144,6 +144,21 @@
 
 
 (define (helper word len wordList green yellow grey)
+  (define (yel? w lst)
+      (cond ((null? lst) #t)
+            ((= (string-length w) 0) #f)
+            ((member (substring w 0 1) lst) (yel? (substring w 1) (remove (substring w 0 1) lst)))
+            (else (yel? (substring w 1) lst)))
+          )
+  (define (gry? w lst)
+       (cond ((= (string-length w) 0) #t)
+              ((member (substring w 0 1) lst) #f)
+              (else (gry? (substring w 1) lst))))
+  (define (grn? w lst)
+     (cond ((null? lst) #t)
+           ((not (equal? (substring w (cdr (car lst)) (+ 1 (cdr (car lst)))) (car (car lst)))) #f)
+           (else (grn? w (cdr lst)))))
+  
   (define (choose wordList)
     (word? wordList (rand (length wordList))))
 (define (help w res pos grn yel gry)
@@ -155,9 +170,11 @@
   (let ((answer (choose wordList)))
   (begin (display answer) (newline)
          (let* ((result (read)) (colors (help answer result 0 '() '() '()))
-                (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey)))
+                (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey))
+                (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordList)))
+           
                                 (cond ((equal? answer word) (begin (display "YOU WON"))) 
-                                  (else (begin (display (list newgrn newyel newgry)) (newline) (helper word len wordList newgrn newyel newgry))))))))
+                                  (else (begin (display (list newgrn newyel newgry)) (newline) (helper word len newList newgrn newyel newgry))))))))
            
            
 
