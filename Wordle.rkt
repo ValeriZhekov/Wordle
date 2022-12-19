@@ -156,7 +156,9 @@
   (begin (display answer) (newline)
          (let* ((result (read)) (colors (help answer result 0 '() '() '()))
                 (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey)))
-                                (begin (display colors) (newline) (helper word len wordList newgrn newyel newgry))))))
+                                (cond ((equal? answer word) (begin (display "YOU WON"))) 
+                                  (else (begin (display (list newgrn newyel newgry)) (newline) (helper word len wordList newgrn newyel newgry))))))))
+           
            
 
 (define modes '("normal" "easy" "helper" "expert"))
