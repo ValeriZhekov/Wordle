@@ -13,12 +13,12 @@
 
 (define numWords (length words))
 
-(define (word words pos)
+(define (word? words pos)
   (if (= pos 0)
       (car words)
-      (word (cdr words) (- pos 1))))
+      (word? (cdr words) (- pos 1))))
        
-(define (randWord) (word words (rand numWords)))
+(define (randWord) (word? words (rand numWords)))
 
 
 (define (rateWord word input )
@@ -145,7 +145,7 @@
 
 (define (helper word len wordList green yellow grey)
   (define (choose wordList)
-    word)
+    (word? wordList (rand (length wordList))))
 (define (help w res pos grn yel gry)
     (cond ((= 0 (string-length w)) (list grn yel gry))
           ((equal? (car res) "green") (help (substring w 1) (cdr res) (+ pos 1) (add (cons (substring w 0 1) pos) grn) yel gry))
@@ -170,7 +170,7 @@
                       (cond ((equal? mode "normal") (normal word len))
                             ((equal? mode "easy") (easy word len '() '() '()))
                             ((equal? mode "expert") (expert word len '() '() '() #f))
-                            ((equal? mode "helper") (helper word words len '() '() '()))
+                            ((equal? mode "helper") (helper word len (filter (lambda (x) (= (string-length x) len)) words) '() '() '()))
                             (else (begin (display "No such game mode") (newline)))))))))
 
 (begin (display "GAME MODE:") (newline) (RUN)) 
