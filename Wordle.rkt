@@ -1,16 +1,6 @@
 #lang scheme
 (define (rand n) (floor (* n (random))))
 
-(define (testRand f n t a b c d e)
-  (let ((res (f n)))
-    (cond ((= t 0) (list a b c d e))
-      ((= res 0) (testRand f n (- t 1) (+ a 1) b c d e))
-          ((= res 4) (testRand f n (- t 1) a (+ b 1) c d e))
-          ((= res 11) (testRand f n (- t 1) a b (+ c 1) d e))
-          ((= res 25) (testRand f n (- t 1) a b c (+ d 1) e))
-          ((= res 24) (testRand f n (- t 1) a b c d (+ e 1)))
-          (else (testRand f n (- t 1) a b c d e)))))
-
 (define words
     (list "rabbit" "wolf" "bear" "dog" "bird" "inform" "police" "vegetable" "meat" "grass" "metal"
         "hungry" "keyboard" "mouse" "backpack" "helicopter" "detective" "song" "person" "laugh" "water"
@@ -147,6 +137,23 @@
     ((and (equal? cheated? #f) (= (rand 3) 1))  (begin (display (cheat input result 0)) (newline) (expert word len newgrn newyel newgry #t)))
     (else (begin (display result) (newline) (expert word len newgrn newyel newgry cheated?))))))))
 
+
+(define (helper word len wordList green yellow grey)
+  (define (choose wordList)
+    word)
+(define (help w res pos grn yel gry)
+    (cond ((= 0 (string-length w)) (list grn yel gry))
+          ((equal? (car res) "green") (help (substring w 1) (cdr res) (+ pos 1) (add (cons (substring w 0 1) pos) grn) yel gry))
+          ((equal? (car res) "yellow") (help (substring w 1) (cdr res) (+ pos 1) grn (add (substring w 0 1) yel) gry))
+          (else (help (substring w 1) (cdr res) (+ pos 1) grn yel (add (substring w 0 1) gry)))
+      ))
+  (let ((answer (choose wordList)))
+  (begin (display answer) (newline)
+         (let* ((result (read)) (colors (help answer result 0 '() '() '()))
+                (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey)))
+                                (begin (display colors) (newline) (helper word len wordList newgrn newyel newgry))))))
+           
+
 (define modes '("normal" "easy" "helper" "expert"))
 ;;Задава начало
 (define (RUN)
@@ -158,6 +165,7 @@
                       (cond ((equal? mode "normal") (normal word len))
                             ((equal? mode "easy") (easy word len '() '() '()))
                             ((equal? mode "expert") (expert word len '() '() '() #f))
+                            ((equal? mode "helper") (helper word words len '() '() '()))
                             (else (begin (display "No such game mode") (newline)))))))))
 
 (begin (display "GAME MODE:") (newline) (RUN)) 
