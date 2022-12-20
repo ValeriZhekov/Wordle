@@ -159,14 +159,32 @@
            ((not (equal? (substring w (cdr (car lst)) (+ 1 (cdr (car lst)))) (car (car lst)))) #f)
            (else (grn? w (cdr lst)))))
   
-  (define (choose wordList)
-    (word? wordList (rand (length wordList))))
-(define (help w res pos grn yel gry)
+  (define (help w res pos grn yel gry)
     (cond ((= 0 (string-length w)) (list grn yel gry))
           ((equal? (car res) "green") (help (substring w 1) (cdr res) (+ pos 1) (add (cons (substring w 0 1) pos) grn) yel gry))
           ((equal? (car res) "yellow") (help (substring w 1) (cdr res) (+ pos 1) grn (add (substring w 0 1) yel) gry))
           (else (help (substring w 1) (cdr res) (+ pos 1) grn yel (add (substring w 0 1) gry)))
       ))
+  
+  (define (choose wordLst)
+    (define (rateW w)
+     (let* ((result (rateWord word w)) (colors (help w result 0 '() '() '()))
+                (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey))
+                (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordLst)))
+                (- (length wordLst) (length newList))))
+    
+    (define (iter ws w max)
+      (if (null? ws)
+          w
+      (let ((rating (rateW (car ws))))
+        (if (> rating max)
+            (iter (cdr ws) (car ws) rating)
+            (iter (cdr ws) w max)))))
+    
+    (if (and (null? green) (null? yellow) (null? grey))
+    (word? wordLst (rand (length wordLst)))
+    (iter (cdr wordLst) (car wordLst) (rateW (car wordLst)))))
+  
   (let ((answer (choose wordList)))
     (if (equal? answer word)
         (begin (display answer) (newline) (display "YOU WON") (newline))
