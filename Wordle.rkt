@@ -167,23 +167,28 @@
       ))
   
   (define (choose wordLst)
-    (define (rateW w)
-     (let* ((result (rateWord word w)) (colors (help w result 0 '() '() '()))
+    (define (rateW w w2)
+     (let* ((result (rateWord w2 w)) (colors (help w result 0 '() '() '()))
                 (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey))
                 (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordLst)))
                 (- (length wordLst) (length newList))))
     
+    (define (rateWAll w ws)
+      (if (null? ws)
+             0
+             (+ (rateW w (car ws)) (rateWAll w (cdr ws)))))
+    
     (define (iter ws w max)
       (if (null? ws)
           w
-      (let ((rating (rateW (car ws))))
+      (let ((rating (rateWAll (car ws) wordLst)))
         (if (> rating max)
             (iter (cdr ws) (car ws) rating)
             (iter (cdr ws) w max)))))
     
     (if (and (null? green) (null? yellow) (null? grey))
     (word? wordLst (rand (length wordLst)))
-    (iter (cdr wordLst) (car wordLst) (rateW (car wordLst)))))
+    (iter (cdr wordLst) (car wordLst) (rateWAll (car wordLst) wordLst))))
   
   (let ((answer (choose wordList)))
     (if (equal? answer word)
