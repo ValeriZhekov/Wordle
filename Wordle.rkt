@@ -92,13 +92,14 @@
      (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey)))
     
     (cond ((null? (filter (lambda (x)(not (equal? x "green"))) result)) (begin (display "YOU WON")))
-          ((not (gry? input grey)) (begin (display "Using greys") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
-          ((not (grn? input green)) (begin (display "Missing greens") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
-          ((not (yel? input yellow)) (begin (display "Missing yellows") (newline) (display (list newgrn newyel newgry)) (newline) (easy word len newgrn newyel newgry)))
-          
-          ((not (member input words)) (begin (display "Not in wordlist") (newline) (display (list newgrn newyel newgry)) (newline)  (easy word len newgrn newyel newgry)))
-          
-    (else (begin (display result) (newline) (easy word len newgrn newyel newgry))))))))
+           
+    (else (begin (display result) (newline)
+    (if (not (gry? input grey)) (begin (display "Using greys") (newline)) (begin (display "")))
+    (if (not (grn? input green)) (begin (display "Missing greens") (newline)) (begin (display "")))
+    (if (not (yel? input yellow)) (begin (display "Missing yellows") (newline)) (begin (display "")))
+    (if (not (member input words)) (begin (display "Not in wordlist") (newline)) (begin (display "")))
+    (display (list newgrn newyel newgry)) (newline)
+    (easy word len newgrn newyel newgry))))))))
 
 (define (expert word len green yellow grey cheated?)
   (define (help w res pos grn yel gry)
