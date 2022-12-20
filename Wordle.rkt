@@ -168,13 +168,14 @@
           (else (help (substring w 1) (cdr res) (+ pos 1) grn yel (add (substring w 0 1) gry)))
       ))
   (let ((answer (choose wordList)))
+    (if (equal? answer word)
+        (begin (display answer) (newline) (display "YOU WON") (newline))
   (begin (display answer) (newline)
          (let* ((result (read)) (colors (help answer result 0 '() '() '()))
                 (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey))
                 (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordList)))
-           
-                                (cond ((equal? answer word) (begin (display "YOU WON"))) 
-                                  (else (begin (display (list newgrn newyel newgry)) (newline) (helper word len newList newgrn newyel newgry))))))))
+               
+                 (begin (display (list newgrn newyel newgry)) (newline) (helper word len newList newgrn newyel newgry)))))))
            
            
 
