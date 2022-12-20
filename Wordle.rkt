@@ -190,6 +190,8 @@
     (word? wordLst (rand (length wordLst)))
     (iter (cdr wordLst) (car wordLst) (rateWAll (car wordLst) wordLst))))
   
+ (if (null? wordList)
+     (begin (display "The player has given conflicting answers"))
   (let ((answer (choose wordList)))
     (if (equal? answer word)
         (begin (display answer) (newline) (display "YOU WON") (newline))
@@ -198,7 +200,7 @@
                 (newgrn (add* (car colors) green))(newyel (add* (car (cdr colors)) yellow))   (newgry (add* (car (cddr colors)) grey))
                 (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordList)))
                
-                 (begin (display (list newgrn newyel newgry)) (newline) (helper word len newList newgrn newyel newgry)))))))
+                 (begin (display (list newgrn newyel newgry)) (newline) (helper word len newList newgrn newyel newgry))))))))
            
            
 
