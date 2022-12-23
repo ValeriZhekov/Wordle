@@ -202,7 +202,11 @@
                 (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordList)))
                
                  (begin (display (list newgrn newyel newgry)) (newline) (helper word len newList newgrn newyel newgry))))))))
-           
+
+(define (remove* toDel lst)
+   (if (null? toDel)
+              lst
+        (remove* (cdr toDel) (remove (car toDel) lst))))
            
 
 (define modes '("normal" "easy" "helper" "expert"))
