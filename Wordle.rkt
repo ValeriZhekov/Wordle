@@ -207,9 +207,91 @@
    (if (null? toDel)
               lst
         (remove* (cdr toDel) (remove (car toDel) lst))))
+
+(define (noDuplicates lst)
+  (cond ((null? lst) lst)
+    ((member (car lst) (cdr lst)) (noDuplicates (cdr lst)))
+            ( else (cons (car lst) (noDuplicates (cdr lst))))))
+
+
+(define (experthelper word len wordList green yellow grey results answers)
+  (define (yel? w lst)
+      (cond ((null? lst) #t)
+            ((= (string-length w) 0) #f)
+            ((member (substring w 0 1) lst) (yel? (substring w 1) (remove (substring w 0 1) lst)))
+            (else (yel? (substring w 1) lst)))
+          )
+  (define (gry? w lst)
+       (cond ((= (string-length w) 0) #t)
+              ((member (substring w 0 1) lst) #f)
+              (else (gry? (substring w 1) lst))))
+  (define (grn? w lst)
+     (cond ((null? lst) #t)
+           ((not (equal? (substring w (cdr (car lst)) (+ 1 (cdr (car lst)))) (car (car lst)))) #f)
+           (else (grn? w (cdr lst)))))
+  
+  (define (help w res pos grn yel gry)
+    (cond ((= 0 (string-length w)) (list grn yel gry))
+          ((equal? (car res) "green") (help (substring w 1) (cdr res) (+ pos 1) (add (cons (substring w 0 1) pos) grn) yel gry))
+          ((equal? (car res) "yellow") (help (substring w 1) (cdr res) (+ pos 1) grn (add (substring w 0 1) yel) gry))
+          (else (help (substring w 1) (cdr res) (+ pos 1) grn yel (add (substring w 0 1) gry)))
+      ))
+  
+  (define (choose wordLst)
+    (define (rateW w w2)
+     (let* ((result (rateWord w2 w)) (colors (help w result 0 '() '() '()))
+                (newgrn (add* (car colors) green))(newyel (noDuplicates (add* (car (cdr colors)) yellow)))   (newgry (add* (car (cddr colors)) grey))
+                (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordLst)))
+                (- (length wordLst) (length newList))))
+    
+    (define (rateWAll w ws)
+      (if (null? ws)
+             0
+             (+ (rateW w (car ws)) (rateWAll w (cdr ws)))))
+    
+    (define (iter ws w max)
+      (if (null? ws)
+          w
+      (let ((rating (rateWAll (car ws) wordLst)))
+        (if (> rating max)
+            (iter (cdr ws) (car ws) rating)
+            (iter (cdr ws) w max)))))
+    
+    (if (and (null? green) (null? yellow) (null? grey))
+    (word? wordLst (rand (length wordLst)))
+    (iter (cdr wordLst) (car wordLst) (rateWAll (car wordLst) wordLst))))
+
+  (define (removeResult res ans lst)
+(if (null? res)
+     lst
+    (let* ((colors (help (car ans) (car res) 0 '() '() '()))
+                (newgrn (remove* (car colors) green))(newyel (noDuplicates (remove* (car (cdr colors)) yellow)))   (newgry (remove* (car (cddr colors)) grey))
+                (newList (filter (lambda (x) (and (= (string-length x) len) (grn? x newgrn) (yel? x newyel) (gry? x newgry))) words)))
+                                   
+                   (removeResult (cdr res) (cdr ans) (add* newList lst))
+     )))
+     
+  
+(let ((removeLst (if (null? results) wordList (removeResult results answers '()))))
+  (if (null? removeLst)
+     (begin (display "Given more than one conflicting answer") (newline))
+    
+  (let ((answer (choose removeLst)))
+    (if (equal? answer word)
+        (begin (display answer) (newline) (display "YOU WON") (newline))
+  (begin (display removeLst) (display answer) (newline)
+         (let* ((result (read)) (colors (help answer result 0 '() '() '()))
+                (newgrn (append (car colors) green))(newyel (append (car (cdr colors)) yellow))   (newgry (append (car (cddr colors)) grey))
+                (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordList)))
+           
+                 (begin (display (list newgrn newyel newgry)) (newline) (experthelper word len newList newgrn newyel newgry (cons result results) (cons answer answers))))))))))
+
+
+
+
            
 
-(define modes '("normal" "easy" "helper" "expert"))
+(define modes '("normal" "easy" "helper" "expert" "experthelper"))
 ;;Задава начало
 (define (RUN)
  (let ((mode (read)))
@@ -221,6 +303,7 @@
                             ((equal? mode "easy") (easy word len '() '() '()))
                             ((equal? mode "expert") (expert word len '() '() '() #f))
                             ((equal? mode "helper") (helper word len (filter (lambda (x) (= (string-length x) len)) words) '() '() '()))
+                            ((equal? mode "experthelper") (experthelper word len (filter (lambda (x) (= (string-length x) len)) words) '() '() '() '() '()))
                             (else (begin (display "No such game mode") (newline)))))))))
 
 (begin (display "GAME MODE:") (newline) (RUN)) 
