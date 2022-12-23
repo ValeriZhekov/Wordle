@@ -279,7 +279,7 @@
   (let ((answer (if (< (length results) 2) (word? words (rand (length words))) (choose removeLst))))
     (if (equal? answer word)
         (begin (display answer) (newline) (display "YOU WON") (newline))
-  (begin (display removeLst) (display answer) (newline)
+  (begin (display answer) (newline)
          (let* ((result (read)) (colors (help answer result 0 '() '() '()))
                 (newgrn (append (car colors) green))(newyel (append (car (cdr colors)) yellow))   (newgry (append (car (cddr colors)) grey))
                 (newList (filter (lambda (x) (and (grn? x newgrn) (yel? x newyel) (gry? x newgry))) wordList)))
