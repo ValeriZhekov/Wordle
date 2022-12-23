@@ -276,7 +276,7 @@
   (if (null? removeLst)
      (begin (display "Given more than one conflicting answer") (newline))
     
-  (let ((answer (choose removeLst)))
+  (let ((answer (if (< (length results) 2) (word? words (rand (length words))) (choose removeLst))))
     (if (equal? answer word)
         (begin (display answer) (newline) (display "YOU WON") (newline))
   (begin (display removeLst) (display answer) (newline)
