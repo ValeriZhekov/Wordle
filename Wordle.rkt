@@ -272,7 +272,7 @@
      )))
      
   
-(let ((removeLst (if (null? results) wordList (removeResult results answers '()))))
+(let ((removeLst (if (< (length results) 2) (filter (lambda (x) (= (string-length x) len)) words) (removeResult results answers '()))))
   (if (null? removeLst)
      (begin (display "Given more than one conflicting answer") (newline))
     
